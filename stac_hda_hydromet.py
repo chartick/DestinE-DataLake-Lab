@@ -10,24 +10,19 @@ import shutil
 import json
 
 
-def extract_datetime_from_filename(filename, ftype):
+def extract_datetime_from_filename(filename):
     """Extract datetime from a NetCDF or csv filename."""
-    if ftype == "nc":
-        match = re.search(r'(\d{4})_(\d{4})', filename)
-        start_year = int(match.group(1))
-        end_year = int(match.group(2))
+    match = re.search(
+        r"(\d{4})_\d{2}_\d{2}_T\d{2}_\d{2}_to_"
+        r"(\d{4})_\d{2}_\d{2}_T\d{2}_\d{2}",
+        filename
+    )
+    start_year = int(match.group(1))
+    end_year = int(match.group(2))
 
-        start_date = datetime(start_year, 1, 1)
-        end_date = datetime(end_year, 12, 31)
-        return start_date, end_date
-    if ftype == "csv":
-        match = re.search(r'(\d{10})-(\d{10})', filename)
-        start_date_str = match.group(1)
-        end_date_str = match.group(2)
-
-        start_date = datetime.strptime(start_date_str, '%Y%m%d%H')
-        end_date = datetime.strptime(end_date_str, '%Y%m%d%H')
-        return start_date, end_date
+    start_date = datetime(start_year, 1, 1)
+    end_date = datetime(end_year, 12, 31)
+    return start_date, end_date
 
 
 def get_spatial_extent_csv(dataset):
@@ -79,7 +74,7 @@ def create_stac_item_nc(netcdf_path, output_path):
     # Extract metadata
     filename = os.path.basename(netcdf_path)
     datetime_obj_start, datetime_obj_end = extract_datetime_from_filename(
-        filename, "nc")
+        filename)
     spatial_extent = get_spatial_extent(dataset)
     geometry = box(*spatial_extent).__geo_interface__
 
@@ -121,7 +116,7 @@ def create_stac_item_csv(netcdf_path, output_path):
     # Extract metadata
     filename = os.path.basename(netcdf_path)
     datetime_obj_start, datetime_obj_end = extract_datetime_from_filename(
-        filename, "csv")
+        filename)
     spatial_extent = get_spatial_extent_csv(dataset)
     geometry = box(*spatial_extent).__geo_interface__
 
@@ -180,7 +175,9 @@ def create_config_json(eumet_id, metadata_dir):
         "item_asset_ignore_list": ["item_config.json"],
         "item_folder_level": "YYYY",
         "thumbnail_regex": "^thumbnail",
-        "overview_regex": "^overview"
+        "overview_regex": "^overview",
+        "additional_property_keys": ["model", "experiment",
+                                     "generation", "simulation_id"]
     }
 
     # Write to collection_config.json
@@ -196,6 +193,7 @@ if __name__ == "__main__":
     title = config.get("title", "No title found")
     description = config.get("description", "No description found")
     eumet_id = config.get("id", "No id found")
+    generation = config.get("generation", "No generation found")
 
     # Directory structure
     base_dir = os.getcwd()
@@ -204,6 +202,7 @@ if __name__ == "__main__":
     metadata_dir = os.path.join(coll_dir, "metadata")
     items_dir = os.path.join(metadata_dir, "items")
     data_dir = os.path.join(coll_dir, "data")
+    pdf_path = os.path.join(org_dir, "hydromet_output.pdf")
 
     # Ensure directories exist
     os.makedirs(coll_dir, exist_ok=True)
@@ -216,67 +215,99 @@ if __name__ == "__main__":
     all_datetimes = []
 
     # Process each NetCDF file
-    for file in os.listdir(org_dir):
-        if file.endswith(".nc"):
-            netcdf_path = os.path.join(org_dir, file)
-            item_path = os.path.join(items_dir,
-                                     f"{file.replace('.nc', '.json')}")
+    for model in os.listdir(org_dir):
+        model_path = os.path.join(org_dir, model)
+        if os.path.isdir(model_path):
+            for file in os.listdir(model_path):
+                if file.endswith(".nc"):
+                    netcdf_path = os.path.join(model_path, file)
+                    item_path = os.path.join(items_dir,
+                                             f"{file.replace('.nc', '.json')}")
 
-            # Create STAC Item
-            dataset = xr.open_dataset(netcdf_path)
-            bbox = get_spatial_extent(dataset)
-            all_bboxes.append(bbox)
+                    # Create STAC Item
+                    dataset = xr.open_dataset(netcdf_path)
+                    bbox = get_spatial_extent(dataset)
+                    all_bboxes.append(bbox)
 
-            datetime_obj_start, datetime_obj_end =\
-                extract_datetime_from_filename(file, "nc")
-            year_dir = os.path.join(data_dir, str(datetime_obj_start.year))
-            os.makedirs(year_dir, exist_ok=True)
-            file_struct = os.path.join(year_dir, eumet_id + "_" +
-                                       datetime_obj_start.
-                                       strftime("%Y%m%dT%H%M%S") +
-                                       "_" +
-                                       datetime_obj_end.
-                                       strftime("%Y%m%dT%H%M%S"))
-            os.makedirs(file_struct, exist_ok=True)
-            shutil.copy(netcdf_path, file_struct)
-            create_item_config(file_struct, netcdf_path, "nc")
-            all_datetimes.append(datetime_obj_start)
-            all_datetimes.append(datetime_obj_end)
+                    datetime_obj_start, datetime_obj_end =\
+                        extract_datetime_from_filename(file)
+                    if 1990 <= datetime_obj_start.year <= 2019:
+                        experiment = "historical"
+                        exp_start = "1990"
+                        exp_end = "2019"
+                    else:
+                        experiment = "ssp3-7.0"
+                        exp_start = "2020"
+                        exp_end = "2049"
+                    year_dir = os.path.join(data_dir, exp_start)
+                    os.makedirs(year_dir, exist_ok=True)
+                    file_struct = os.path.join(year_dir, eumet_id + "_" +
+                                               exp_start + "0101T000000_" +
+                                               exp_end + "1231T230000__" +
+                                               model +
+                                               "__" +
+                                               experiment +
+                                               "__" +
+                                               str(generation) +
+                                               "__sim" +
+                                               datetime.now(
+                                                   ).strftime("%d%m%y"))
+                    os.makedirs(file_struct, exist_ok=True)
+                    shutil.copy(netcdf_path, file_struct)
+                    shutil.copy(pdf_path, file_struct)
+                    create_item_config(file_struct, netcdf_path, "nc")
+                    all_datetimes.append(datetime_obj_start)
+                    all_datetimes.append(datetime_obj_end)
 
-            # create_stac_item_nc(netcdf_path, item_path)
+                    # create_stac_item_nc(netcdf_path, item_path)
 
-        if file.endswith(".csv"):
-            netcdf_path = os.path.join(org_dir, file)
-            item_path = os.path.join(items_dir,
-                                     f"{file.replace('.csv', '.json')}")
+                if file.endswith(".csv"):
+                    netcdf_path = os.path.join(model_path, file)
+                    item_path = os.path.join(
+                        items_dir, f"{file.replace('.csv', '.json')}")
 
-            # Create STAC Item
-            dataset = pd.read_csv(netcdf_path, delimiter=';', comment='#')
-            dataset['lat_center'] = pd.to_numeric(
-                dataset['lat_center'], errors='coerce')
-            dataset['lon_center'] = pd.to_numeric(
-                dataset['lon_center'], errors='coerce')
-            bbox = get_spatial_extent_csv(dataset)
-            all_bboxes.append(bbox)
+                    # Create STAC Item
+                    dataset = pd.read_csv(
+                        netcdf_path, delimiter=';', comment='#')
+                    dataset['lat_center'] = pd.to_numeric(
+                        dataset['lat_center'], errors='coerce')
+                    dataset['lon_center'] = pd.to_numeric(
+                        dataset['lon_center'], errors='coerce')
+                    bbox = get_spatial_extent_csv(dataset)
+                    all_bboxes.append(bbox)
 
-            datetime_obj_start, datetime_obj_end = \
-                extract_datetime_from_filename(file, "csv")
-            year_dir = os.path.join(data_dir, str(datetime_obj_start.year))
-            os.makedirs(year_dir, exist_ok=True)
-            file_struct = os.path.join(year_dir, eumet_id + "_" +
-                                       datetime_obj_start.
-                                       strftime("%Y%m%dT%H%M%S") +
-                                       "_" +
-                                       datetime_obj_end.
-                                       strftime("%Y%m%dT%H%M%S"))
-            os.makedirs(file_struct, exist_ok=True)
-            shutil.copy(netcdf_path, file_struct)
-            if not os.path.exists(file_struct + "item_config.json"):
-                create_item_config(file_struct, netcdf_path, "csv")
-            all_datetimes.append(datetime_obj_start)
-            all_datetimes.append(datetime_obj_end)
+                    datetime_obj_start, datetime_obj_end = \
+                        extract_datetime_from_filename(file)
+                    if 1990 <= datetime_obj_start.year <= 2019:
+                        experiment = "historical"
+                        exp_start = "1990"
+                        exp_end = "2019"
+                    else:
+                        experiment = "ssp3-7.0"
+                        exp_start = "2020"
+                        exp_end = "2049"
+                    year_dir = os.path.join(data_dir, exp_start)
+                    os.makedirs(year_dir, exist_ok=True)
+                    file_struct = os.path.join(year_dir, eumet_id + "_" +
+                                               exp_start + "0101T000000_" +
+                                               exp_end + "1231T230000__" +
+                                               model +
+                                               "__" +
+                                               experiment +
+                                               "__" +
+                                               str(generation) +
+                                               "__sim" +
+                                               datetime.now(
+                                                   ).strftime("%d%m%y"))
+                    os.makedirs(file_struct, exist_ok=True)
+                    shutil.copy(netcdf_path, file_struct)
+                    shutil.copy(pdf_path, file_struct)
+                    if not os.path.exists(file_struct + "item_config.json"):
+                        create_item_config(file_struct, netcdf_path, "csv")
+                    all_datetimes.append(datetime_obj_start)
+                    all_datetimes.append(datetime_obj_end)
 
-            # create_stac_item_csv(netcdf_path, item_path)
+                    # create_stac_item_csv(netcdf_path, item_path)
 
     # Determine collection extents
     spatial_extent = [
@@ -286,8 +317,8 @@ if __name__ == "__main__":
         max([b[3] for b in all_bboxes]),
     ]
     temporal_extent = [
-        min(all_datetimes),
-        max(all_datetimes),
+        datetime(1990, 1, 1),
+        datetime(2049, 12, 31),
     ]
     # Create STAC Collection
     collection_path = os.path.join(metadata_dir, "collection.json")

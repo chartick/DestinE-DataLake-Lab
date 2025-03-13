@@ -1,4 +1,4 @@
-import logging
+#import logging
 import os
 import json
 import pystac
@@ -17,11 +17,12 @@ from config import (
     ITEM_FOLDER_LEVEL_DD,
     ITEM_FOLDER_LEVEL_MM,
     ITEM_FOLDER_LEVEL_YYYY,
+    ADDITIONAL_PROPERTY_KEYS,
     S3_ENDPOINT_URL,
     S3_USER_GENERATED_BUCKET_PREFIX,
 )
 
-import usergenerated.logging_config # import must come before other modules in this project so that logging setup correctly
+#import usergenerated.logging_config # import must come before other modules in this project so that logging setup correctly
 from usergenerated import datetools
 from usergenerated.config import confighelper
 from usergenerated.item import itemhelper
@@ -71,11 +72,10 @@ class ItemGenerator:
 
         ###### load the collection config #####
         collection_config = confighelper.load_config(self.collection_config_path)
-        logger.debug(f"collection_config:{collection_config}")
+        #logger.debug(f"collection_config:{collection_config}")
 
         # List to store the folder names found in YYYY/MM/DD folders (i.e. the folders at this level represent Items)
         item_folder_paths = []
-        
 
         # ITEM Folders are expected by defulat to be in a folder representing a day DD
         if ITEM_FOLDER_LEVEL not in collection_config:
@@ -158,159 +158,159 @@ class ItemGenerator:
         Returns:
         pystac.Item: The created STAC item.
         """
-        try:
-            # Load item-specific configuration from a file in the item folder
-            item_config = confighelper.load_config(
-                item_folder_path / ITEM_CONFIG_FILE_NAME
+        
+        # Load item-specific configuration from a file in the item folder
+        item_config = confighelper.load_config(
+            item_folder_path / ITEM_CONFIG_FILE_NAME
+        )
+        #logger.debug(item_config)
+
+        # Combine item and collection configuration, with item-specific values overriding collection values
+        config_list = [item_config, collection_config]
+
+        ########## Initialize Variables For Item ##########
+
+        #logger.info(f"item_folder_path:{item_folder_path}")
+
+        # Extract item ID and date components from the folder path
+        item_id = item_folder_path.name
+        item_folder_path_parts = str(item_folder_path).split(os.path.sep)
+        collection_id = item_folder_path_parts[0]
+        # year folder will always be present
+        year_from_folder_path = item_folder_path_parts[2]
+
+        # month folder will only be present if items at MM or DD level or not specified (default DD)
+        if (
+            not collection_config[ITEM_FOLDER_LEVEL]
+            or collection_config[ITEM_FOLDER_LEVEL] == ITEM_FOLDER_LEVEL_MM
+            or collection_config[ITEM_FOLDER_LEVEL] == ITEM_FOLDER_LEVEL_DD
+        ):
+            month_from_folder_path = item_folder_path_parts[3]
+        else:
+            month_from_folder_path = "01"
+
+        # day folder will only be present if items at DD level or not specified (default DD)
+        if (
+            not collection_config[ITEM_FOLDER_LEVEL]
+            or collection_config[ITEM_FOLDER_LEVEL] == ITEM_FOLDER_LEVEL_DD
+        ):
+            day_from_folder_path = item_folder_path_parts[4]
+        else:
+            day_from_folder_path = "01"
+
+        #logger.info(
+        #    f"item_id:{item_id}, collection_id:{collection_id}, "
+        #    f"year_from_folder_path:{year_from_folder_path}, "
+        #    f"month_from_folder_path:{month_from_folder_path}, "
+        #    f"day_from_folder_path:{day_from_folder_path}"
+        #)
+
+        # Convert date components to a datetime object
+        datetime_from_folder_path = datetime(
+            int(year_from_folder_path),
+            int(month_from_folder_path),
+            int(day_from_folder_path),
+        )
+
+        # Get datetime object and date related properties from the item ID
+        (item_datetime, item_properties) = itemhelper.get_item_properties(item_id, collection_id, confighelper.get_config_value(config_list, ADDITIONAL_PROPERTY_KEYS, True) or [])
+
+        # Update item_properties with additional properties if they exist
+        item_properties.update(
+            confighelper.get_config_value(config_list, "properties", True) or {}
+        )
+
+        # Ensure the folder date matches the item ID date : Sanity Check
+        datetools.is_same_day(datetime_from_folder_path, item_datetime)
+
+        # Retrieve bounding box from the configuration : Normally Item Specific i.e. in item_config.json
+        bbox = confighelper.get_config_value(config_list, "bbox", True)
+
+        # Create a polygon from the bounding box and convert to GeoJSON
+        if bbox:
+            polygon = box(*bbox)
+            geometry = mapping(polygon)
+        else:
+            geometry = None
+
+        ####################
+
+        # Create the STAC item
+        item = pystac.Item(
+            id=item_id,
+            geometry=geometry,
+            bbox=bbox,
+            datetime=item_datetime,
+            properties=item_properties,
+        )
+
+        ####################
+
+        # Gather all file paths in the item folder and subfolders
+        asset_paths = [
+            file for file in item_folder_path.rglob("*") if file.is_file()
+        ]
+
+        # Process each file and add as an asset to the item
+        for asset_path in asset_paths:
+
+            asset_href_data_root = Path(*asset_path.parts[1:])
+
+            # Compute the relative href
+            asset_href = asset_path.relative_to(item_folder_path)
+            #logger.info(f"asset_href:{asset_href}")
+
+            # Skip files listed in the ignore list from the configuration
+            item_asset_ignore_list = confighelper.get_config_value(
+                config_list, "item_asset_ignore_list"
             )
-            logger.debug(item_config)
+            if asset_href.name not in item_asset_ignore_list:
+                # Determine the MIME type of the asset
+                media_type = itemhelper.get_media_type(asset_path)
 
-            # Combine item and collection configuration, with item-specific values overriding collection values
-            config_list = [item_config, collection_config]
-
-            ########## Initialize Variables For Item ##########
-
-            logger.info(f"item_folder_path:{item_folder_path}")
-
-            # Extract item ID and date components from the folder path
-            item_id = item_folder_path.name
-            item_folder_path_parts = str(item_folder_path).split(os.path.sep)
-            collection_id = item_folder_path_parts[0]
-            # year folder will always be present
-            year_from_folder_path = item_folder_path_parts[2]
-
-            # month folder will only be present if items at MM or DD level or not specified (default DD)
-            if (
-                not collection_config[ITEM_FOLDER_LEVEL]
-                or collection_config[ITEM_FOLDER_LEVEL] == ITEM_FOLDER_LEVEL_MM
-                or collection_config[ITEM_FOLDER_LEVEL] == ITEM_FOLDER_LEVEL_DD
-            ):
-                month_from_folder_path = item_folder_path_parts[3]
-            else:
-                month_from_folder_path = "01"
-
-            # day folder will only be present if items at DD level or not specified (default DD)
-            if (
-                not collection_config[ITEM_FOLDER_LEVEL]
-                or collection_config[ITEM_FOLDER_LEVEL] == ITEM_FOLDER_LEVEL_DD
-            ):
-                day_from_folder_path = item_folder_path_parts[4]
-            else:
-                day_from_folder_path = "01"
-
-            logger.info(
-                f"item_id:{item_id}, collection_id:{collection_id}, "
-                f"year_from_folder_path:{year_from_folder_path}, "
-                f"month_from_folder_path:{month_from_folder_path}, "
-                f"day_from_folder_path:{day_from_folder_path}"
-            )
-
-            # Convert date components to a datetime object
-            datetime_from_folder_path = datetime(
-                int(year_from_folder_path),
-                int(month_from_folder_path),
-                int(day_from_folder_path),
-            )
-
-            # Get datetime object and date related properties from the item ID
-            (item_datetime, item_properties) = itemhelper.get_item_properties(item_id)
-
-            # Update item_properties with additional properties if they exist
-            item_properties.update(
-                confighelper.get_config_value(config_list, "properties", True) or {}
-            )
-
-            # Ensure the folder date matches the item ID date : Sanity Check
-            datetools.is_same_day(datetime_from_folder_path, item_datetime)
-
-            # Retrieve bounding box from the configuration : Normally Item Specific i.e. in item_config.json
-            bbox = confighelper.get_config_value(config_list, "bbox", True)
-
-            # Create a polygon from the bounding box and convert to GeoJSON
-            if bbox:
-                polygon = box(*bbox)
-                geometry = mapping(polygon)
-            else:
-                geometry = None
-
-            ####################
-
-            # Create the STAC item
-            item = pystac.Item(
-                id=item_id,
-                geometry=geometry,
-                bbox=bbox,
-                datetime=item_datetime,
-                properties=item_properties,
-            )
-
-            ####################
-
-            # Gather all file paths in the item folder and subfolders
-            asset_paths = [
-                file for file in item_folder_path.rglob("*") if file.is_file()
-            ]
-
-            # Process each file and add as an asset to the item
-            for asset_path in asset_paths:
-
-                asset_href_data_root = Path(*asset_path.parts[1:])
-
-                # Compute the relative href
-                asset_href = asset_path.relative_to(item_folder_path)
-                logger.info(f"asset_href:{asset_href}")
-
-                # Skip files listed in the ignore list from the configuration
-                item_asset_ignore_list = confighelper.get_config_value(
-                    config_list, "item_asset_ignore_list"
+                # Get regex patterns for thumbnails and overviews
+                thumbnail_regex = confighelper.get_config_value(
+                    config_list, "thumbnail_regex"
                 )
-                if asset_href.name not in item_asset_ignore_list:
-                    # Determine the MIME type of the asset
-                    media_type = itemhelper.get_media_type(asset_path)
+                overview_regex = confighelper.get_config_value(
+                    config_list, "overview_regex"
+                )
 
-                    # Get regex patterns for thumbnails and overviews
-                    thumbnail_regex = confighelper.get_config_value(
-                        config_list, "thumbnail_regex"
-                    )
-                    overview_regex = confighelper.get_config_value(
-                        config_list, "overview_regex"
-                    )
-
-                    # Add the asset to the item
-                    item.add_asset(
-                        key=str(asset_href),
-                        asset=pystac.Asset(
-                            href=str(asset_href_data_root),
-                            media_type=media_type,
-                            roles=itemhelper.get_asset_role(
-                                media_type, asset_href, thumbnail_regex, overview_regex
-                            ),
+                # Add the asset to the item
+                item.add_asset(
+                    key=str(asset_href),
+                    asset=pystac.Asset(
+                        href=str(asset_href_data_root),
+                        media_type=media_type,
+                        roles=itemhelper.get_asset_role(
+                            media_type, asset_href, thumbnail_regex, overview_regex
                         ),
-                    )
+                    ),
+                )
 
-            # Set collection and item self links
-            collection.set_self_href(
-                f"https://hda.data.destination-earth.eu/stac/collections/{collection_id}"
-            )
-            item.set_collection(collection)
-            item.set_self_href(
-                f"https://hda.data.destination-earth.eu/stac/collections/{collection_id}/items/{item_id}"
-            )
+        # Set collection and item self links
+        collection.set_self_href(
+            f"https://hda.data.destination-earth.eu/stac/collections/{collection_id}"
+        )
+        item.set_collection(collection)
+        item.set_self_href(
+            f"https://hda.data.destination-earth.eu/stac/collections/{collection_id}/items/{item_id}"
+        )
 
-            # Ensure the items_root directory exists
-            self.items_root.mkdir(parents=True, exist_ok=True)
+        # Ensure the items_root directory exists
+        self.items_root.mkdir(parents=True, exist_ok=True)
 
-            # Save the item metadata to a JSON file
-            item_path = self.items_root / f"{item.id}.json"
-            with open(item_path, "w") as f:
-                json.dump(item.to_dict(), f, indent=4)
+        # Save the item metadata to a JSON file
+        item_path = self.items_root / f"{item.id}.json"
+        with open(item_path, "w") as f:
+            json.dump(item.to_dict(), f, indent=4)
 
-            logger.info(f"Item metadata saved to {item_path}\n")
-            return item
+        #logger.info(f"Item metadata saved to {item_path}\n")
+        return item
 
-        except Exception as e:
-            logger.error(f"Error creating item: {e}")
-            return None
+        #except Exception as e:
+            #logger.error(f"Error creating item: {e}")
+            #return None
 
 
 #################### START ####################
@@ -318,7 +318,7 @@ class ItemGenerator:
 if __name__ == "__main__":
 
     # Get App Logger
-    logger = logging.getLogger(APP_LOGGER_NAME)
+    #logger = logging.getLogger(APP_LOGGER_NAME)
 
     # The collection_id expects a folder with this id containing data and metadata
     collection_id = "EO.DWD.STAT.HYDROMET-EXTREMES"
