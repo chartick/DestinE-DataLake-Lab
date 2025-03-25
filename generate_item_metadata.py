@@ -321,7 +321,7 @@ if __name__ == "__main__":
     #logger = logging.getLogger(APP_LOGGER_NAME)
 
     # The collection_id expects a folder with this id containing data and metadata
-    collection_id = "EO.DWD.STAT.HYDROMET-EXTREMES"
+    collection_id = "EO.DWD.STAT.HYDROMET_EXTREMES"
 
     # Initialise ItemGenerator to create Item (Feature) metadata associated with the Collection and Data
     item_generator = ItemGenerator(collection_id)

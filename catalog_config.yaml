@@ -1,6 +1,6 @@
 description: "The HydroMet application provides statistics of extreme rainfall from the DestinE ClimateDT simulations. The output consists of extreme event statistics in the form of depth-duration-frequency curves for different return periods, parameters used to model the Generalized Extreme Value distribution, and the intensity annual maximum series of the precipitation. Furthermore, the dataset consists of event catalogs listing all extreme precipitation events that occurred in ClimateDT simulations with their characteristics like affected area and duration."
   
-id: "EO.DWD.STAT.HYDROMET-EXTREMES"
+id: "EO.DWD.STAT.HYDROMET_EXTREMES"
 
 title: "HydroMet: Extreme precipitation"
 

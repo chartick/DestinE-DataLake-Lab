@@ -283,3 +283,11 @@ This is an example of a generated Item from this project. This is a possible sta
 }
 
 ```
+# Usage HydroMet
+Put documentation in the folder `appdata` and data output in the folder `appdata/[ICON/IFS-FESOM/IFS-NEMO]`. Then execute:
+
+```
+python stac_hda_hydromet.py
+python generate_item_metadata.py
+```
+Afterwards upload via `s3cmd`.
