@@ -1,11 +1,18 @@
-description: "The HydroMet application provides statistics of extreme rainfall from the DestinE ClimateDT simulations. The output consists of extreme event statistics in the form of depth-duration-frequency curves for different return periods, parameters used to model the Generalized Extreme Value distribution, and the intensity annual maximum series of the precipitation. Furthermore, the dataset consists of event catalogs listing all extreme precipitation events that occurred in ClimateDT simulations with their characteristics like affected area and duration."
+description: "The output of the HydroMet application provides statistics of extreme rainfall from the DestinE Climate DT simulations over Europe. It is applied to the historical period starting in 1990 and the projections under the SSP3-7.0 scenario, which are simulated until 2050.
+The output is in the form of two NetCDF files and a CSV file for each period. One NetCDF file contains the depth-duration-frequencies (DDF) for different return periods, while the second file contains the parameters used to model the Generalized Extreme Value distribution. DDFs are useful for environmental and urban planning, as they determine the statistical strength of events that occur, for example, every 50 years. The parameters describe the distribution that was used to determine the return periods.   
+The CSV files contain a catalog of extreme precipitation events that occurred in the experiment. They are listed with their location, duration, rainfall depth, affected area and return time. The catalog enables easy analysis of trends in duration and affected areas. 
+The methodologies applied in HydroMet are based on established products of Deutscher Wetterdienst (German Weather Service, DWD). One is the KOSTRA-DWD database, which provides data on precipitation levels, duration, and the annual return interval based on observational data. The other is CatRaRE (Catalogue of Radar-based heavy Rainfall Events). This software package can detect and define extreme rain events while generating a catalogue with meteorological and geographical information for each event.
+For all outputs, the historical period serves as the basis for both projection and evaluation. Currently, the dataset has a test status and is derived from preliminary data from Climate DT. The full output will be available once data from Phase 2 of Climate DT becomes available.
+"
   
 id: "EO.DWD.STAT.HYDROMET_EXTREMES"
 
-title: "HydroMet: Extreme precipitation"
+title: "HydroMet: Catalog of extreme precipitation events"
 
 generation: 1
 
 model: ICON
 
 experiment: ssp3-7.0
+
+short_description: "The HydroMet application provides statistics and an event catalogue of extreme rainfall from the DestinE Climate DT simulations over Europe."

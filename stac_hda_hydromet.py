@@ -42,9 +42,18 @@ def get_spatial_extent(dataset):
 
 
 def create_stac_collection(output_path, spatial_extent,
-                           temporal_extent,  eumet_id, title, description):
+                           temporal_extent,  eumet_id, title, description,
+                           short_description):
     """Create a STAC Collection and save it."""
     print(spatial_extent, temporal_extent)
+
+    asset = pystac.Asset(
+    href="https://object-store.os-api.cci2.ecmwf.int/cci2-prod-catalogue/resources/efas-forecast/overview_ddd9074d456be00a54d03c320485bdbb1d1871507eccaa1039404a9c2c62fe31.png",
+    media_type="image/png", 
+    roles=["thumbnail"],
+    title="overview"
+    )
+
     collection = pystac.Collection(
         id=eumet_id,
         description=description,
@@ -62,7 +71,9 @@ def create_stac_collection(output_path, spatial_extent,
                 url="https://www.dwd.de/",
             )
         ],
+        extra_fields={"dedl:short_description": short_description, "sci:doi":"https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/"}
     )
+    collection.add_asset("thumbnail", asset)
     collection.save_object(dest_href=output_path)
     print(f"Collection saved to {output_path}")
 
@@ -194,6 +205,7 @@ if __name__ == "__main__":
     description = config.get("description", "No description found")
     eumet_id = config.get("id", "No id found")
     generation = config.get("generation", "No generation found")
+    short_description = config.get("short_description", "No short description found")
 
     # Directory structure
     base_dir = os.getcwd()
@@ -323,5 +335,6 @@ if __name__ == "__main__":
     # Create STAC Collection
     collection_path = os.path.join(metadata_dir, "collection.json")
     create_stac_collection(collection_path, spatial_extent,
-                           temporal_extent, eumet_id, title, description)
+                           temporal_extent, eumet_id, title, description,
+                           short_description)
     create_config_json(eumet_id, metadata_dir)
