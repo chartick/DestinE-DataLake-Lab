@@ -11,8 +11,4 @@ title: "HydroMet: Catalog of extreme precipitation events"
 
 generation: 1
 
-model: ICON
-
-experiment: ssp3-7.0
-
 short_description: "The HydroMet application provides statistics and an event catalogue of extreme rainfall from the DestinE Climate DT simulations over Europe."
