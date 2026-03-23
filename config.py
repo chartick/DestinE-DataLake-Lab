@@ -20,7 +20,7 @@ ITEM_CONFIG_FILE_NAME: str = "item_config.json"
 ITEM_CONFIG_OPTIONAL: str = "item_config_optional"
 
 # expected config at collection level to indicate at what level to find Item Folders
-ITEM_FOLDER_LEVEL: str = "item_folder_level"
+ITEM_FOLDER_LEVEL: str = "YYYY"
 # The different values that are expected. e.g. YYYY means Item Folders are expected to be in the YYYY folders
 ITEM_FOLDER_LEVEL_YYYY: str = "YYYY"
 ITEM_FOLDER_LEVEL_MM: str = "MM"
@@ -39,7 +39,7 @@ IS_UPLOAD_S3: bool = False
 IS_OVERWRITE_S3: bool = False
 S3_ENDPOINT_URL: str = "https://s3.central.data.destination-earth.eu"
 # Standardised bucket names for usergenerated collections e.g. usergenerated-EO.XXX.YYY.ZZZ. In the code we concatenate with the -EO.XXX.YYY.ZZZ
-S3_USER_GENERATED_BUCKET_PREFIX: str = "usergenerated-proposal"
+S3_USER_GENERATED_BUCKET_PREFIX: str = "EO.DWD.STAT.HYDROMET_EXTREMES"
 
 
 class ItemFolderNamingConventionType(StrEnum):

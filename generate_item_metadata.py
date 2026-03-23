@@ -567,7 +567,7 @@ if __name__ == "__main__":
     logger = logging.getLogger(APP_LOGGER_NAME)
 
     # The collection_id expects a folder with this id containing data and metadata
-    collection_id = "EO.XXX.YYY.ZZZ"
+    collection_id = "EO.DWD.STAT.HYDROMET_EXTREMES"
 
     # Initialise ItemGenerator to create Item (Feature) metadata associated with the Collection and Data
     # Note: a second argument can be provided to overide the bucket name (only necessary if it does not follow the case-sensitive naming convention) 'usergenerated-proposal-[collection_id]'
