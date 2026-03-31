@@ -6,6 +6,7 @@ python-magic
 requests
 beautifulsoup4
 netCDF4
+libmagic
 #An issue has been identified with the latest version of boto3, we are therefore pinning to a specific version
 #boto3
 boto3==1.35.99

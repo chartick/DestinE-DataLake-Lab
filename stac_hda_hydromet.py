@@ -42,16 +42,21 @@ def get_spatial_extent(dataset):
 
 
 def create_stac_collection(output_path, spatial_extent,
-                           temporal_extent,  eumet_id, title, description,
-                           short_description):
+                           temporal_extent, eumet_id, title, description,
+                           short_description,
+                           parameters_path="parameters.json"):
     """Create a STAC Collection and save it."""
     print(spatial_extent, temporal_extent)
 
+    # Load parameters.json
+    with open(parameters_path, "r") as f:
+        parameters_data = json.load(f)
+
     asset = pystac.Asset(
-    href="https://object-store.os-api.cci2.ecmwf.int/cci2-prod-catalogue/resources/efas-forecast/overview_ddd9074d456be00a54d03c320485bdbb1d1871507eccaa1039404a9c2c62fe31.png",
-    media_type="image/png", 
-    roles=["thumbnail"],
-    title="overview"
+        href="https://destination-earth.eu/wp-content/uploads/2023/10/hydromet_fig1-1771x547-1.png",
+        media_type="image/png",
+        roles=["thumbnail"],
+        title="overview"
     )
 
     collection = pystac.Collection(
@@ -71,10 +76,17 @@ def create_stac_collection(output_path, spatial_extent,
                 url="https://www.dwd.de/",
             )
         ],
-        extra_fields={"dedl:short_description": short_description, "sci:doi":"https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/"}
+        extra_fields={
+            "dedl:short_description": short_description,
+            "sci:doi": "https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/",
+            # 👇 include your parameters.json here
+            "summaries": parameters_data["summaries"]
+        }
     )
+
     collection.add_asset("thumbnail", asset)
     collection.save_object(dest_href=output_path)
+
     print(f"Collection saved to {output_path}")
 
 
@@ -205,7 +217,8 @@ if __name__ == "__main__":
     description = config.get("description", "No description found")
     eumet_id = config.get("id", "No id found")
     generation = config.get("generation", "No generation found")
-    short_description = config.get("short_description", "No short description found")
+    short_description = config.get(
+        "short_description", "No short description found")
 
     # Directory structure
     base_dir = os.getcwd()
@@ -244,13 +257,19 @@ if __name__ == "__main__":
                     datetime_obj_start, datetime_obj_end =\
                         extract_datetime_from_filename(file)
                     if 1990 <= datetime_obj_start.year <= 2019:
-                        experiment = "historical"
+                        activity = "baseline"
+                        experiment = "hist"
                         exp_start = "1990"
-                        exp_end = "2019"
+                        exp_end = "2014"
+                        resolution = "5km"
+                        realization = "1"
                     else:
+                        activity = "projections"
                         experiment = "ssp3-7.0"
-                        exp_start = "2020"
+                        exp_start = "2015"
                         exp_end = "2049"
+                        resolution = "5km"
+                        realization = "1"
                     year_dir = os.path.join(data_dir, exp_start)
                     os.makedirs(year_dir, exist_ok=True)
                     file_struct = os.path.join(year_dir, eumet_id + "_" +
@@ -261,9 +280,12 @@ if __name__ == "__main__":
                                                experiment +
                                                "__" +
                                                str(generation) +
-                                               "__sim" +
-                                               datetime.now(
-                                                   ).strftime("%d%m%y"))
+                                               "__" +
+                                               str(realization) +
+                                               "__" +
+                                               str(activity) +
+                                               "__" +
+                                               str(resolution))
                     os.makedirs(file_struct, exist_ok=True)
                     shutil.copy(netcdf_path, file_struct)
                     shutil.copy(pdf_path, file_struct)
@@ -290,14 +312,20 @@ if __name__ == "__main__":
 
                     datetime_obj_start, datetime_obj_end = \
                         extract_datetime_from_filename(file)
-                    if 1990 <= datetime_obj_start.year <= 2019:
-                        experiment = "historical"
+                    if 1990 <= datetime_obj_start.year <= 2014:
+                        activity = "baseline"
+                        experiment = "hist"
                         exp_start = "1990"
-                        exp_end = "2019"
+                        exp_end = "2014"
+                        resolution = "5km"
+                        realization = "1"
                     else:
+                        activity = "projections"
                         experiment = "ssp3-7.0"
-                        exp_start = "2020"
+                        exp_start = "2015"
                         exp_end = "2049"
+                        resolution = "5km"
+                        realization = "1"
                     year_dir = os.path.join(data_dir, exp_start)
                     os.makedirs(year_dir, exist_ok=True)
                     file_struct = os.path.join(year_dir, eumet_id + "_" +
@@ -308,9 +336,12 @@ if __name__ == "__main__":
                                                experiment +
                                                "__" +
                                                str(generation) +
-                                               "__sim" +
-                                               datetime.now(
-                                                   ).strftime("%d%m%y"))
+                                               "__" +
+                                               str(realization) +
+                                               "__" +
+                                               str(activity) +
+                                               "__" +
+                                               str(resolution))
                     os.makedirs(file_struct, exist_ok=True)
                     shutil.copy(netcdf_path, file_struct)
                     shutil.copy(pdf_path, file_struct)
