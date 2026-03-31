@@ -200,7 +200,8 @@ def create_config_json(eumet_id, metadata_dir):
         "thumbnail_regex": "^thumbnail",
         "overview_regex": "^overview",
         "additional_property_keys": ["model", "experiment",
-                                     "generation", "simulation_id"]
+                                     "generation", "realization",
+                                     "activity", "resolution"]
     }
 
     # Write to collection_config.json
