@@ -62,7 +62,7 @@ def create_stac_collection(output_path, spatial_extent,
     collection = pystac.Collection(
         id=eumet_id,
         description=description,
-        stac_extensions=["https://stac-extensions.github.io/scientific/v1.0.0/schema.json"]
+        stac_extensions=["https://stac-extensions.github.io/scientific/v1.0.0/schema.json"],
         extent=pystac.Extent(
             spatial=pystac.SpatialExtent([spatial_extent]),
             temporal=pystac.TemporalExtent([temporal_extent]),
