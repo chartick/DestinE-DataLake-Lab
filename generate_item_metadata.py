@@ -102,6 +102,7 @@ class ItemGenerator:
             ValueError: If an unexpected folder level configuration is provided
         """
         item_folder_paths: List[Path] = []
+        folder_level = "Y"
 
         if folder_level == ITEM_FOLDER_LEVEL_DD:
             # Navigate: data/YYYY/MM/DD/items
@@ -125,7 +126,7 @@ class ItemGenerator:
                                 if item_folder.is_dir():
                                     item_folder_paths.append(item_folder)
 
-        elif folder_level == ITEM_FOLDER_LEVEL_YYYY:
+        elif folder_level == "Y":
             # Navigate: data/YYYY/items
             for year_folder in self.data_root.iterdir():
                 if year_folder.is_dir():
@@ -145,6 +146,7 @@ class ItemGenerator:
                 f"Expected values: {ITEM_FOLDER_LEVEL_YYYY}, {ITEM_FOLDER_LEVEL_MM}, "
                 f"{ITEM_FOLDER_LEVEL_DD}, or {ITEM_FOLDER_LEVEL_NONE}"
             )
+
 
         return item_folder_paths
 
