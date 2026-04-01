@@ -462,103 +462,99 @@ class ItemGenerator:
         Returns:
         pystac.Item: The created STAC item.
         """
-        try:
 
-            ###################################################################
-            ###### Initialise item_config (obligatory) and config_list    #####
-            ###################################################################
-            #
-            # Load item-specific configuration from a file in the item folder
 
-            # Item_Config is mandatory by default
-            is_item_config_optional = False
-            if ITEM_CONFIG_OPTIONAL in collection_config:
-                is_item_config_optional = collection_config[ITEM_CONFIG_OPTIONAL]
-                print(f"{ITEM_CONFIG_OPTIONAL}:{is_item_config_optional}")
+        ###################################################################
+        ###### Initialise item_config (obligatory) and config_list    #####
+        ###################################################################
+        #
+        # Load item-specific configuration from a file in the item folder
 
-            item_config = confighelper.load_config(
-                item_folder_path / ITEM_CONFIG_FILE_NAME, is_item_config_optional
+        # Item_Config is mandatory by default
+        is_item_config_optional = False
+        if ITEM_CONFIG_OPTIONAL in collection_config:
+            is_item_config_optional = collection_config[ITEM_CONFIG_OPTIONAL]
+            print(f"{ITEM_CONFIG_OPTIONAL}:{is_item_config_optional}")
+
+        item_config = confighelper.load_config(
+            item_folder_path / ITEM_CONFIG_FILE_NAME, is_item_config_optional
+        )
+        logger.debug(item_config)
+
+        # Combine item and collection configuration, with item-specific values overriding collection values
+        config_list = [item_config, collection_config]
+
+        ###################################################################
+        ###### Initialize item_id and collection_id from folder names #####
+        ###################################################################
+
+        logger.info(f"item_folder_path:{item_folder_path}")
+
+        # Extract item ID and date components from the folder path
+        item_id = item_folder_path.name
+        item_folder_path_parts = str(item_folder_path).split(os.path.sep)
+        collection_id = item_folder_path_parts[0]
+
+        ###################################################################
+        ###### Initialise datetime_from_folder_path                   #####
+        ###################################################################
+
+        datetime_from_folder_path = itemhelper.get_datetime_from_folder_path(
+            item_folder_path_parts, collection_config, item_id, collection_id
+        )
+
+        ###################################################################
+        ###### item_datetime item_properties                          #####
+        ###################################################################
+
+        # Get datetime object and date related properties from the item ID
+        (item_datetime, item_properties) = itemhelper.get_item_properties(
+            item_id,
+            collection_id,
+            confighelper.get_config_value(
+                config_list, ADDITIONAL_PROPERTY_KEYS, True
             )
-            logger.debug(item_config)
+            or [],
+        )
 
-            # Combine item and collection configuration, with item-specific values overriding collection values
-            config_list = [item_config, collection_config]
+        # Update item_properties with additional properties if they exist
+        item_properties.update(
+            confighelper.get_config_value(config_list, "properties", True) or {}
+        )
 
-            ###################################################################
-            ###### Initialize item_id and collection_id from folder names #####
-            ###################################################################
+        # Ensure the folder date matches the item ID date : Sanity Check
+        datetools.is_same_day(datetime_from_folder_path, item_datetime)
 
-            logger.info(f"item_folder_path:{item_folder_path}")
+        ###################################################################
+        ###### Initialise bbox                                        #####
+        ###################################################################
 
-            # Extract item ID and date components from the folder path
-            item_id = item_folder_path.name
-            item_folder_path_parts = str(item_folder_path).split(os.path.sep)
-            collection_id = item_folder_path_parts[0]
+        # Retrieve bounding box from the configuration : Normally Item Specific i.e. in item_config.json
+        bbox = confighelper.get_config_value(config_list, "bbox", True)
 
-            ###################################################################
-            ###### Initialise datetime_from_folder_path                   #####
-            ###################################################################
+        # Create a polygon from the bounding box and convert to GeoJSON
+        if bbox:
+            polygon = box(*bbox)
+            geometry = mapping(polygon)
+        else:
+            geometry = None
 
-            datetime_from_folder_path = itemhelper.get_datetime_from_folder_path(
-                item_folder_path_parts, collection_config, item_id, collection_id
-            )
+        ###################################################################
+        ###### common get_item process : normal and Simplified process  #####
+        ###################################################################
 
-            ###################################################################
-            ###### item_datetime item_properties                          #####
-            ###################################################################
+        item = self.get_item(
+            item_id,
+            geometry,
+            bbox,
+            item_datetime,
+            item_properties,
+            item_folder_path,
+            config_list,
+            collection,
+        )
 
-            # Get datetime object and date related properties from the item ID
-            (item_datetime, item_properties) = itemhelper.get_item_properties(
-                item_id,
-                collection_id,
-                confighelper.get_config_value(
-                    config_list, ADDITIONAL_PROPERTY_KEYS, True
-                )
-                or [],
-            )
-
-            # Update item_properties with additional properties if they exist
-            item_properties.update(
-                confighelper.get_config_value(config_list, "properties", True) or {}
-            )
-
-            # Ensure the folder date matches the item ID date : Sanity Check
-            datetools.is_same_day(datetime_from_folder_path, item_datetime)
-
-            ###################################################################
-            ###### Initialise bbox                                        #####
-            ###################################################################
-
-            # Retrieve bounding box from the configuration : Normally Item Specific i.e. in item_config.json
-            bbox = confighelper.get_config_value(config_list, "bbox", True)
-
-            # Create a polygon from the bounding box and convert to GeoJSON
-            if bbox:
-                polygon = box(*bbox)
-                geometry = mapping(polygon)
-            else:
-                geometry = None
-
-            ###################################################################
-            ###### common get_item process : normal and Simplified process  #####
-            ###################################################################
-
-            item = self.get_item(
-                item_id,
-                geometry,
-                bbox,
-                item_datetime,
-                item_properties,
-                item_folder_path,
-                config_list,
-                collection,
-            )
-
-            return item
-
-        except Exception as e:
-            logger.error(f"Error creating item: {e}")
-            return None
+        return item
 
 
 #################### START ####################
