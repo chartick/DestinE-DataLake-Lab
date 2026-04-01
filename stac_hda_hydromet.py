@@ -79,10 +79,28 @@ def create_stac_collection(output_path, spatial_extent,
         ],
         extra_fields={
             "dedl:short_description": short_description,
-            "sci:doi": "https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/",
-        },
-        summaries=parameters_data["summaries"]
+            "sci:publications": [
+            {
+            "doi": "10.1127/metz/2021/1088",
+            "citation": "Lengfeld, K., Walawender, E., Winterrath, T., & Becker, A. (2021). CatRaRE: A Catalogue of radar-based heavy rainfall events in Germany derived from 20 years of data. Meteorologische Zeitschrift, 30(6), 469–487. https://doi.org/10.1127/metz/2021/1088"
+            },
+            {
+            "doi": "10.5194/hess-27-1109-2023",
+            "citation": "Shehu, B., Willems, W., Stockel, H., Thiele, L.-B., & Haberlandt, U. (2023). Regionalisation of rainfall depth–duration–frequency curves with different data types in Germany. Hydrology and Earth System Sciences, 27(5), 1109–1132. https://doi.org/10.5194/hess-27-1109-2023"
+            }
+            ],
+            "summaries": parameters_data["summaries"]
+        }
     )
+
+    collection.add_link(
+    pystac.Link(
+        rel="related",
+        target="https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/",
+        media_type="text/html",
+        title="Application description"
+    )
+)
 
     collection.add_asset("thumbnail", asset)
     collection.save_object(dest_href=output_path)
