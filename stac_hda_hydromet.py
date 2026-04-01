@@ -73,7 +73,7 @@ def create_stac_collection(output_path, spatial_extent,
         providers=[
             pystac.Provider(
                 name="Deutscher Wetterdienst (DWD)",
-                roles=["producer", "licensor"],
+                roles=["producer"],
                 url="https://www.dwd.de/",
             ),
             pystac.Provider(
@@ -103,7 +103,7 @@ def create_stac_collection(output_path, spatial_extent,
         rel="related",
         target="https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/",
         media_type="text/html",
-        title="Application description"
+        title="Simulating the Future of Extreme Events"
     )
 )
 
