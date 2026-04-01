@@ -75,6 +75,11 @@ def create_stac_collection(output_path, spatial_extent,
                 name="Deutscher Wetterdienst (DWD)",
                 roles=["producer", "licensor"],
                 url="https://www.dwd.de/",
+            ),
+            pystac.Provider(
+                name="European Centre for Medium-Range Weather Forecasts (ECMWF)",
+                roles=["licensor"],
+                url="https://www.ecmwf.int/",
             )
         ],
         extra_fields={
