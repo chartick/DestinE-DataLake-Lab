@@ -80,9 +80,8 @@ def create_stac_collection(output_path, spatial_extent,
         extra_fields={
             "dedl:short_description": short_description,
             "sci:doi": "https://destination-earth.eu/use-cases/simulating-the-future-of-extreme-events/",
-            # 👇 include your parameters.json here
-            "summaries": parameters_data["summaries"]
-        }
+        },
+        summaries=parameters_data["summaries"]
     )
 
     collection.add_asset("thumbnail", asset)
