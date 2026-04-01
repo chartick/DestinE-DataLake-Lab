@@ -20,7 +20,7 @@ ITEM_CONFIG_FILE_NAME: str = "item_config.json"
 ITEM_CONFIG_OPTIONAL: str = "item_config_optional"
 
 # expected config at collection level to indicate at what level to find Item Folders
-ITEM_FOLDER_LEVEL: str = "YYYY"
+ITEM_FOLDER_LEVEL: str = "item_folder_level"
 # The different values that are expected. e.g. YYYY means Item Folders are expected to be in the YYYY folders
 ITEM_FOLDER_LEVEL_YYYY: str = "YYYY"
 ITEM_FOLDER_LEVEL_MM: str = "MM"
