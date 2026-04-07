@@ -20,7 +20,13 @@
     "description": "Longitude"
   },
   "time": {
-    "type": "temporal"
+    "type": "temporal",
+    "extent": [
+        "1990-01-01T00:00:00Z",
+        "2049-12-31T23:00:00Z",
+      ],
+    "description": "Durations of the event in minutes"
+  },
   },
   "durations": {
     "type": "temporal",

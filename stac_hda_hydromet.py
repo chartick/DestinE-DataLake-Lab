@@ -103,6 +103,7 @@ def create_stac_collection(output_path, spatial_extent,
             ],
             "cube:dimensions": parameters_data["cube:dimensions"],
             "cube:variables": parameters_data["cube:variables"],
+            "summaries":""
         }
     )
 
