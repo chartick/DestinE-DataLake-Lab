@@ -2,23 +2,45 @@
   "cube:dimensions": {
   "lat": {
     "type": "spatial",
-    "axis": "y"
+    "axis": "y",
+    "extent": [
+        27.025,
+        71.975
+      ],
+    "description": "Latitude"
+
   },
   "lon": {
     "type": "spatial",
-    "axis": "x"
+    "axis": "x",
+    "extent": [
+        -21.0,
+        45.0
+      ],
+    "description": "Longitude"
   },
   "time": {
     "type": "temporal"
   },
   "durations": {
-    "type": "temporal"
+    "type": "temporal",
+    "extent": [
+        60,
+        10080
+      ],
+    "description": "Durations of the event in minutes"
   },
   "return_time": {
-    "type": "temporal"
+    "type": "temporal",
+    "extent": [
+        1,
+        100
+      ],
+    "description": "Return period of the event in years"
   },
   "number": {
-    "type": "other"
+    "type": "other",
+    "description": "Number of the captured event"
   }
   },
   "cube:variables": {
