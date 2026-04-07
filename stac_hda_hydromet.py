@@ -71,7 +71,7 @@ def create_stac_collection(output_path, spatial_extent,
         ),
         license="CC-BY-4.0",
         title=title,
-        summaries={"federation:backends": ["dedt_lumi"]},
+        summaries={},
         keywords=["NetCDF", "Climate", "Precipitation", "Extreme events"],
         providers=[
             pystac.Provider(
@@ -242,7 +242,7 @@ def create_config_json(eumet_id, metadata_dir):
 
 
 if __name__ == "__main__":
-    
+
     pystac.version.set_stac_version("1.0.0")
 
     # Get extended attributes from file
