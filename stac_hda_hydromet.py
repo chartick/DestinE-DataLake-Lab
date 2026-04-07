@@ -62,7 +62,9 @@ def create_stac_collection(output_path, spatial_extent,
     collection = pystac.Collection(
         id=eumet_id,
         description=description,
-        stac_extensions=["https://stac-extensions.github.io/scientific/v1.0.0/schema.json"],
+        stac_extensions=["https://stac-extensions.github.io/scientific/v1.0.0/schema.json",
+                         "https://stac-extensions.github.io/timestamps/v1.1.0/schema.json",
+                         "https://stac-extensions.github.io/datacube/v2.2.0/schema.json"],
         extent=pystac.Extent(
             spatial=pystac.SpatialExtent([spatial_extent]),
             temporal=pystac.TemporalExtent([temporal_extent]),
@@ -80,6 +82,11 @@ def create_stac_collection(output_path, spatial_extent,
                 name="European Centre for Medium-Range Weather Forecasts (ECMWF)",
                 roles=["licensor"],
                 url="https://www.ecmwf.int/",
+            ),
+            pystac.Provider(
+                name="Destination Earth Data Lake (DEDL)",
+                roles=["host"],
+                url="https://data.destination-earth.eu/",
             )
         ],
         extra_fields={
@@ -94,7 +101,8 @@ def create_stac_collection(output_path, spatial_extent,
             "citation": "Shehu, B., Willems, W., Stockel, H., Thiele, L.-B., & Haberlandt, U. (2023). Regionalisation of rainfall depth–duration–frequency curves with different data types in Germany. Hydrology and Earth System Sciences, 27(5), 1109–1132. https://doi.org/10.5194/hess-27-1109-2023"
             }
             ],
-            "summaries": parameters_data["summaries"]
+            "cube:dimensions": parameters_data["cube:dimensions"],
+            "cube:variables": parameters_data["cube:variables"],
         }
     )
 
@@ -233,6 +241,8 @@ def create_config_json(eumet_id, metadata_dir):
 
 
 if __name__ == "__main__":
+    
+    pystac.version.set_stac_version("1.0.0")
 
     # Get extended attributes from file
     with open("catalog_config.yaml", "r") as file:

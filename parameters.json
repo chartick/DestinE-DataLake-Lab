@@ -1,203 +1,151 @@
 {
-  "summaries": {
-    "parameters": [
-      {
-        "name": "Location parameter xi",
-        "short_name": "xi",
-        "unit": null,
-        "dimensions": ["lat", "lon"],
-        "description": "Location parameter xi describing the Generalized Extreme Value distribution."
-      },
-      {
-        "name": "Scale parameter alpha",
-        "short_name": "alpha",
-        "unit": null,
-        "dimensions": ["lat", "lon"],
-        "description": "Scale parameter alpha describing the Generalized Extreme Value distribution."
-      },
-      {
-        "name": "First Koutsoyiannis-Parameter theta",
-        "short_name": "theta",
-        "unit": null,
-        "dimensions": ["lat", "lon"],
-        "description": "First Koutsoyiannis-Parameter theta describing the Generalized Extreme Value distribution."
-      },
-      {
-        "name": "Second Koutsoyiannis-Parameter theta",
-        "short_name": "eta",
-        "unit": null,
-        "dimensions": ["lat", "lon"],
-        "description": "Second Koutsoyiannis-Parameter theta describing the Generalized Extreme Value distribution."
-      },
-      {
-        "name": "Balancing parameter beta",
-        "short_name": "beta",
-        "unit": null,
-        "dimensions": ["time", "durations", "lat", "lon"],
-        "description": "Balancing parameter beta describing the Generalized Extreme Value distribution."
-      },
-      {
-        "name": "Intensity Annual Maxima Series",
-        "short_name": "iams",
-        "unit": null,
-        "dimensions": ["time", "durations", "lat", "lon"],
-        "description": "Intensity Annual Maxima Series indicating the maximum precipitation of each year for different durations."
-      },
-      {
-        "name": "Depth-Duration-Frequency",
-        "short_name": "DDF",
-        "unit": "mm",
-        "dimensions": ["return_time", "durations", "latitude", "longitude"],
-        "description": "Depth-Duration-Frequency represents in a rain event the relation between rain depth, duration and return period (frequency)."
-      },
-      {
-        "name": "Object_ID",
-        "short_name": "Object_ID",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Code for the object the event was selected from comprised of end date in numerical form, duration window in hours, and a running number"
-      },
-      {
-        "name": "Event_ID",
-        "short_name": "Event_ID",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Code for event comprised of return period, selection parameter and running number"
-      },
-      {
-        "name": "Start_Time",
-        "short_name": "Start_Time",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Start date of event"
-      },
-            {
-        "name": "End_Time",
-        "short_name": "End_Time",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "End date of event"
-      },
-            {
-        "name": "Duration",
-        "short_name": "Duration",
-        "unit": "hours",
-        "dimensions": ["number"],
-        "description": "Duration of event"
-      },
-            {
-        "name": "Area",
-        "short_name": "Area",
-        "unit": "25 km²",
-        "dimensions": ["number"],
-        "description": "Number of pixels included within event or area in 25 km²"
-      },
-            {
-        "name": "RRmean",
-        "short_name": "RRmean",
-        "unit": "mm",
-        "dimensions": ["number"],
-        "description": "Mean precipitation rate within event"
-      },
-            {
-        "name": "Tmean_KOSTRA",
-        "short_name": "Tmean_KOSTRA",
-        "unit": "years",
-        "dimensions": ["number"],
-        "description": " Mean return period of the event"
-      },
-            {
-        "name": "Eta_KOSTRA",
-        "short_name": "Eta_KOSTRA",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Extremity of event"
-      },
-            {
-        "name": "RRmax",
-        "short_name": "RRmax",
-        "unit": "mm",
-        "dimensions": ["number"],
-        "description": "Maximum precipitation within the event"
-      },
-            {
-        "name": "RR_Tmax",
-        "short_name": "RR_Tmax",
-        "unit": "mm",
-        "dimensions": ["number"],
-        "description": "Precipitation rate with the maximum return period"
-      },
-            {
-        "name": "Tmax_KOSTRA",
-        "short_name": "Tmax_KOSTRA",
-        "unit": "years",
-        "dimensions": ["number"],
-        "description": "Maximum return period within the event"
-      },
-            {
-        "name": "x_center",
-        "short_name": "x_center",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Pixel number on x-axis of the event center"
-      },
-            {
-        "name": "y_center",
-        "short_name": "y_center",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Pixel number on y-axis of the event center"
-      },
-            {
-        "name": "lon_center",
-        "short_name": "lon_center",
-        "unit": "°",
-        "dimensions": ["number"],
-        "description": "Longitude of the event center"
-      },
-            {
-        "name": "lat_center",
-        "short_name": "lat_center",
-        "unit": "°",
-        "dimensions": ["number"],
-        "description": "Latitude of the events center"
-      },
-            {
-        "name": "x_RRmax",
-        "short_name": "x_RRmax",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Pixel number on the x-axis of the maximum precipitation within the event"
-      },
-            {
-        "name": "y_RRmax",
-        "short_name": "y_RRmax",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Pixel number on the y-axis of the maximum precipitation within the event"
-      },
-            {
-        "name": "lon_RRmax",
-        "short_name": "lon_RRmax",
-        "unit": "°",
-        "dimensions": ["number"],
-        "description": " Longitude of the maximum precipitation within the event"
-      },
-                  {
-        "name": "lat_RRmax",
-        "short_name": "lat_RRmax",
-        "unit": "°",
-        "dimensions": ["number"],
-        "description": "Latitude of the maximum precipitation within the event"
-      },
-                  {
-        "name": "MPP_flag",
-        "short_name": "MPP_flag",
-        "unit": null,
-        "dimensions": ["number"],
-        "description": "Indicator for anomalies of data, when MPP (Maximum Pixel Precipitation) was exceeded it is set to 1."
-      }
-    ]
+  "cube:dimensions": {
+  "lat": {
+    "type": "spatial",
+    "axis": "y"
+  },
+  "lon": {
+    "type": "spatial",
+    "axis": "x"
+  },
+  "time": {
+    "type": "temporal"
+  },
+  "durations": {
+    "type": "temporal"
+  },
+  "return_time": {
+    "type": "temporal"
+  },
+  "number": {
+    "type": "other"
+  }
+  },
+  "cube:variables": {
+    "xi": {
+      "description": "Location parameter xi describing the Generalized Extreme Value distribution.",
+      "dimensions": ["lat", "lon"]
+    },
+    "alpha": {
+      "description": "Scale parameter alpha describing the Generalized Extreme Value distribution.",
+      "dimensions": ["lat", "lon"]
+    },
+    "theta": {
+      "description": "First Koutsoyiannis-Parameter theta describing the Generalized Extreme Value distribution.",
+      "dimensions": ["lat", "lon"]
+    },
+    "eta": {
+      "description": "Second Koutsoyiannis-Parameter theta describing the Generalized Extreme Value distribution.",
+      "dimensions": ["lat", "lon"]
+    },
+    "beta": {
+      "description": "Balancing parameter beta describing the Generalized Extreme Value distribution.",
+      "dimensions": ["time", "durations", "lat", "lon"]
+    },
+    "iams": {
+      "description": "Intensity Annual Maxima Series indicating the maximum precipitation of each year for different durations.",
+      "dimensions": ["time", "durations", "lat", "lon"]
+    },
+    "DDF": {
+      "description": "Depth-Duration-Frequency represents in a rain event the relation between rain depth, duration and return period (frequency).",
+      "dimensions": ["return_time", "durations", "lat", "lon"],
+      "unit": "mm"
+    },
+    "Object_ID": {
+      "description": "Code for the object the event was selected from comprised of end date in numerical form, duration window in hours, and a running number",
+      "dimensions": ["number"]
+    },
+    "Event_ID": {
+      "description": "Code for event comprised of return period, selection parameter and running number",
+      "dimensions": ["number"]
+    },
+    "Start_Time": {
+      "description": "Start date of event",
+      "dimensions": ["number"]
+    },
+    "End_Time": {
+      "description": "End date of event",
+      "dimensions": ["number"]
+    },
+    "Duration": {
+      "description": "Duration of event",
+      "dimensions": ["number"],
+      "unit": "hours"
+    },
+    "Area": {
+      "description": "Number of pixels included within event or area in 25 km²",
+      "dimensions": ["number"],
+      "unit": "25 km²"
+    },
+    "RRmean": {
+      "description": "Mean precipitation rate within event",
+      "dimensions": ["number"],
+      "unit": "mm"
+    },
+    "Tmean_KOSTRA": {
+      "description": " Mean return period of the event",
+      "dimensions": ["number"],
+      "unit": "years"
+    },
+    "Eta_KOSTRA": {
+      "description": "Extremity of event",
+      "dimensions": ["number"]
+    },
+    "RRmax": {
+      "description": "Maximum precipitation within the event",
+      "dimensions": ["number"],
+      "unit": "mm"
+    },
+    "RR_Tmax": {
+      "description": "Precipitation rate with the maximum return period",
+      "dimensions": ["number"],
+      "unit": "mm"
+    },
+    "Tmax_KOSTRA": {
+      "description": "Maximum return period within the event",
+      "dimensions": ["number"],
+      "unit": "years"
+    },
+    "x_center": {
+      "description": "Pixel number on x-axis of the event center",
+      "dimensions": ["number"]
+    },
+    "y_center": {
+      "description": "Pixel number on y-axis of the event center",
+      "dimensions": ["number"]
+    },
+    "lon_center": {
+      "description": "Longitude of the event center",
+      "dimensions": ["number"],
+      "unit": "°"
+    },
+    "lat_center": {
+      "description": "Latitude of the events center",
+      "dimensions": ["number"],
+      "unit": "°"
+    },
+    "x_RRmax": {
+      "description": "Pixel number on the x-axis of the maximum precipitation within the event",
+      "dimensions": ["number"]
+    },
+    "y_RRmax": {
+      "description": "Pixel number on the y-axis of the maximum precipitation within the event",
+      "dimensions": ["number"]
+    },
+    "lon_RRmax": {
+      "description": " Longitude of the maximum precipitation within the event",
+      "dimensions": ["number"],
+      "unit": "°"
+    },
+    "lat_RRmax": {
+      "description": "Latitude of the maximum precipitation within the event",
+      "dimensions": ["number"],
+      "unit": "°"
+    },
+    "MPP_flag": {
+      "description": "Indicator for anomalies of data, when MPP (Maximum Pixel Precipitation) was exceeded it is set to 1.",
+      "dimensions": ["number"]
+    }
   }
 }
   
