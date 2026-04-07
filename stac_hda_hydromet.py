@@ -71,6 +71,7 @@ def create_stac_collection(output_path, spatial_extent,
         ),
         license="CC-BY-4.0",
         title=title,
+        summaries={"federation:backends": ["dedt_lumi"]},
         keywords=["NetCDF", "Climate", "Precipitation", "Extreme events"],
         providers=[
             pystac.Provider(
@@ -102,8 +103,7 @@ def create_stac_collection(output_path, spatial_extent,
             }
             ],
             "cube:dimensions": parameters_data["cube:dimensions"],
-            "cube:variables": parameters_data["cube:variables"],
-            "summaries": {"federation:backends": ["dedt_lumi"]}
+            "cube:variables": parameters_data["cube:variables"]
         }
     )
 

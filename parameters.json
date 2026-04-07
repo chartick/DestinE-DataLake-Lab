@@ -44,7 +44,11 @@
     "description": "Return period of the event in years"
   },
   "number": {
-    "type": "other",
+    "type": "additional",
+    "extent": [
+        1,
+        677865
+      ],
     "description": "Number of the captured event"
   }
   },
