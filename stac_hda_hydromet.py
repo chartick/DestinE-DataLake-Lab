@@ -291,7 +291,7 @@ if __name__ == "__main__":
 
                     datetime_obj_start, datetime_obj_end =\
                         extract_datetime_from_filename(file)
-                    if 1990 <= datetime_obj_start.year <= 2019:
+                    if 1990 <= datetime_obj_start.year <= 2014:
                         activity = "baseline"
                         experiment = "hist"
                         exp_start = "1990"
