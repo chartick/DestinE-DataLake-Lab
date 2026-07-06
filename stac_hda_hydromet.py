@@ -322,7 +322,8 @@ if __name__ == "__main__":
                                                "__" +
                                                str(resolution))
                     os.makedirs(file_struct, exist_ok=True)
-                    shutil.copy(netcdf_path, file_struct)
+                    if not os.path.exists(file_struct)
+                        shutil.copy(netcdf_path, file_struct)
                     shutil.copy(pdf_path, file_struct)
                     create_item_config(file_struct, netcdf_path, "nc")
                     all_datetimes.append(datetime_obj_start)
@@ -378,7 +379,8 @@ if __name__ == "__main__":
                                                "__" +
                                                str(resolution))
                     os.makedirs(file_struct, exist_ok=True)
-                    shutil.copy(netcdf_path, file_struct)
+                    if not os.path.exists(file_struct)
+                        shutil.copy(netcdf_path, file_struct)
                     shutil.copy(pdf_path, file_struct)
                     if not os.path.exists(file_struct + "item_config.json"):
                         create_item_config(file_struct, netcdf_path, "csv")
