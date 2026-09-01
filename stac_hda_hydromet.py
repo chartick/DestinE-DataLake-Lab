@@ -322,7 +322,7 @@ if __name__ == "__main__":
                                                "__" +
                                                str(resolution))
                     os.makedirs(file_struct, exist_ok=True)
-                    if not os.path.exists(file_struct)
+                    if not os.path.exists(file_struct):
                         shutil.copy(netcdf_path, file_struct)
                     shutil.copy(pdf_path, file_struct)
                     create_item_config(file_struct, netcdf_path, "nc")
@@ -379,7 +379,7 @@ if __name__ == "__main__":
                                                "__" +
                                                str(resolution))
                     os.makedirs(file_struct, exist_ok=True)
-                    if not os.path.exists(file_struct)
+                    if not os.path.exists(file_struct):
                         shutil.copy(netcdf_path, file_struct)
                     shutil.copy(pdf_path, file_struct)
                     if not os.path.exists(file_struct + "item_config.json"):

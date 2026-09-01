@@ -109,7 +109,7 @@
       "unit": "25 km²"
     },
     "RRmean": {
-      "description": "Mean precipitation rate within event",
+      "description": "Mean precipitation amount within event",
       "dimensions": ["number"],
       "unit": "mm"
     },
@@ -128,7 +128,7 @@
       "unit": "mm"
     },
     "RR_Tmax": {
-      "description": "Precipitation rate with the maximum return period",
+      "description": "Precipitation amount with the maximum return period",
       "dimensions": ["number"],
       "unit": "mm"
     },
